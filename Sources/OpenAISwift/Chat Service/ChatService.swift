@@ -10,18 +10,18 @@ import Foundation
 public class ChatService: Fetchable {
     public init() {}
     
-    public func fetchChatCompletion(text: String, image: String?, history: [Message]) async throws -> CompletionResponse {
-        try await fetch(ChatServiceRouter.completion(text, image, history))
+    public func fetchChatCompletion(payload: CompletionPayload) async throws -> CompletionResponse {
+        try await fetch(ChatServiceRouter.completion(payload))
     }
     
-    public func streamChatCompletion(text: String, image: String?, history: [Message]) async -> AsyncThrowingStream<CompletionChunk, Error> {
-        await stream(ChatServiceRouter.completionStream(text, image, history))
+    public func streamChatCompletion(payload: CompletionPayload) async -> AsyncThrowingStream<CompletionChunk, Error> {
+        await stream(ChatServiceRouter.completionStream(payload))
     }
 }
 
 enum ChatServiceRouter: ServiceRouter {
-    case completion(String, String?, [Message])
-    case completionStream(String, String?, [Message])
+    case completion(CompletionPayload)
+    case completionStream(CompletionPayload)
 
     private static let baseURL = "https://api.openai.com/v1"
 
@@ -45,18 +45,10 @@ enum ChatServiceRouter: ServiceRouter {
 
     var body: Encodable? {
         switch self {
-        case .completion(let prompt, let image, var history):
-            history.append(Message(role: .user, text: prompt, image: image))
-            return CompletionRequest(messages: history, model: .gpt4VisionPreview)
-
-        case .completionStream(let prompt, let image, var history):
-            history.append(Message(role: .user, text: prompt, image: image))
-            return CompletionRequest(
-                messages: history,
-                model: .gpt4VisionPreview,
-                maxTokens: 1000,
-                stream: true
-            )
+        case
+            let .completion(payload),
+            let .completionStream(payload):
+            return payload
         }
     }
 
