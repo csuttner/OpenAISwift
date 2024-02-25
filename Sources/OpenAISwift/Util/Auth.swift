@@ -8,5 +8,5 @@
 import Foundation
 
 public class Auth {
-    static var apiKey = ""
+    public static var apiKey = ""
 }
