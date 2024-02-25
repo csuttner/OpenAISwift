@@ -8,6 +8,8 @@
 import Foundation
 
 public class ChatService: Fetchable {
+    public init() {}
+    
     public func fetchChatCompletion(text: String, image: String?, history: [Message]) async throws -> CompletionResponse {
         try await fetch(ChatServiceRouter.completion(text, image, history))
     }
