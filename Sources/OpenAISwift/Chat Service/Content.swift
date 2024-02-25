@@ -7,9 +7,9 @@
 
 import Foundation
 
-enum ChatContent: Codable {
+enum Content: Codable {
     case string(String)
-    case array([ChatContentItem])
+    case array([ContentItem])
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
@@ -28,7 +28,7 @@ enum ChatContent: Codable {
             self = .string(string)
         }
 
-        else if let array = try? container.decode([ChatContentItem].self) {
+        else if let array = try? container.decode([ContentItem].self) {
             self = .array(array)
         }
 

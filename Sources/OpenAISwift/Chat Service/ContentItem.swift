@@ -1,5 +1,5 @@
 //
-//  ChatContentItem.swift
+//  ContentItem.swift
 //  OpenAI
 //
 //  Created by Clay Suttner on 2/11/24.
@@ -7,15 +7,15 @@
 
 import Foundation
 
-enum ChatContentType: String, Codable {
+enum ContentType: String, Codable {
     case text
     case image = "image_url"
 }
 
-struct ChatContentItem: Codable {
-    let type: ChatContentType
+struct ContentItem: Codable {
+    let type: ContentType
     var text: String?
-    var imageUrl: ChatImageUrl?
+    var imageUrl: ImageURL?
 
     init(text: String) {
         type = .text
@@ -24,16 +24,16 @@ struct ChatContentItem: Codable {
 
     init(image: String) {
         type = .image
-        imageUrl = ChatImageUrl(url: image)
+        imageUrl = ImageURL(url: image)
     }
 }
 
-struct ChatImageUrl {
+struct ImageURL {
     let url: String
-    var detail: ChatImageDetail?
+    var detail: ImageDetail?
 }
 
-extension ChatImageUrl: Codable {
+extension ImageURL: Codable {
     private static let prefix = "data:image/jpeg;base64,"
 
     func encode(to encoder: Encoder) throws {
@@ -54,6 +54,6 @@ extension ChatImageUrl: Codable {
     }
 }
 
-enum ChatImageDetail: String, Codable {
+enum ImageDetail: String, Codable {
     case low, high, auto
 }

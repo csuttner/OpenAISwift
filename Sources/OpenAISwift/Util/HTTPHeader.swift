@@ -12,7 +12,10 @@ struct HTTPHeader {
     let value: String
 
     static let contentType = HTTPHeader(field: "Content-Type", value: "application/json")
-    static let authorization = HTTPHeader(field: "Authorization", value: "Bearer \(Secrets.apiKey)")
+
+    static var authorization: HTTPHeader {
+        HTTPHeader(field: "Authorization", value: "Bearer \(Auth.apiKey)")
+    }
 }
 
 extension URLRequest {

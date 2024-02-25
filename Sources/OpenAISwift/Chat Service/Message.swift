@@ -1,5 +1,5 @@
 //
-//  ChatMessage.swift
+//  Message.swift
 //  OpenAI
 //
 //  Created by Clay Suttner on 4/23/23.
@@ -7,10 +7,10 @@
 
 import Foundation
 
-public struct ChatMessage: Codable {
+public struct Message: Codable {
     public let role: Role?
 
-    let content: ChatContent?
+    let content: Content?
 
     public var textContent: String? {
         switch content {
@@ -39,8 +39,8 @@ public struct ChatMessage: Codable {
 
         if let image, !image.isEmpty {
             content = .array([
-                ChatContentItem(text: text),
-                ChatContentItem(image: image),
+                ContentItem(text: text),
+                ContentItem(image: image),
             ])
         } else {
             content = .string(text)

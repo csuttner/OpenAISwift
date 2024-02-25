@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum AIModel: String, Codable {
+enum Model: String, Codable {
     case gpt3_5Turbo = "gpt-3.5-turbo"
     case gpt4VisionPreview = "gpt-4-vision-preview"
 }
