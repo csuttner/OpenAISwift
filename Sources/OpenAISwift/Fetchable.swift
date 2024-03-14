@@ -11,8 +11,30 @@ protocol Fetchable {}
 
 extension Fetchable {
     func fetch<T: Decodable>(_ router: ServiceRouter) async throws -> T {
-        let data = try await fetchData(router)
+        let request = try router.asURLRequest()
 
+        let (data, response) = try await URLSession.shared.data(for: request)
+
+        return try decode(data: data, response: response)
+    }
+    
+    func upload<T: Decodable>(_ formData: Data, router: ServiceRouter) async throws -> T {
+        let request = try router.asURLRequest()
+        
+        let (data, response) = try await URLSession.shared.upload(for: request, from: formData)
+        
+        return try decode(data: data, response: response)
+    }
+    
+    private func decode<T: Decodable>(data: Data, response: URLResponse) throws -> T {
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw URLError(.badServerResponse)
+        }
+
+        if let apiError = APIError(data: data, httpResponse: httpResponse) {
+            throw apiError
+        }
+        
         return try JSONDecoder.shared.decode(T.self, from: data)
     }
     
@@ -35,14 +57,6 @@ extension Fetchable {
         }
     }
     
-    private func parse<T: Decodable>(_ buffer: String) -> [T] {
-        buffer
-            .components(separatedBy: "data: ")
-            .filter { $0 != "data: " }
-            .compactMap { $0.data(using: .utf8) }
-            .compactMap { try? JSONDecoder.shared.decode(T.self, from: $0) }
-    }
-    
     private func fetchBytes(_ router: ServiceRouter) async throws -> URLSession.AsyncBytes {
         let request = try router.asURLRequest()
         
@@ -55,19 +69,11 @@ extension Fetchable {
         return bytes
     }
     
-    private func fetchData(_ router: ServiceRouter) async throws -> Data {
-        let request = try router.asURLRequest()
-
-        let (data, response) = try await URLSession.shared.data(for: request)
-
-        guard let httpResponse = response as? HTTPURLResponse else {
-            throw URLError(.badServerResponse)
-        }
-
-        if let apiError = APIError(data: data, httpResponse: httpResponse) {
-            throw apiError
-        }
-        
-        return data
+    private func parse<T: Decodable>(_ buffer: String) -> [T] {
+        buffer
+            .components(separatedBy: "data: ")
+            .filter { $0 != "data: " }
+            .compactMap { $0.data(using: .utf8) }
+            .compactMap { try? JSONDecoder.shared.decode(T.self, from: $0) }
     }
 }

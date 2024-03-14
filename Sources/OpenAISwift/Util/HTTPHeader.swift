@@ -11,7 +11,8 @@ struct HTTPHeader {
     let field: String
     let value: String
 
-    static let contentType = HTTPHeader(field: "Content-Type", value: "application/json")
+    static let contentTypeJSON = HTTPHeader(field: "Content-Type", value: "application/json")
+    static let contentTypeFormData = HTTPHeader(field: "Content-Type", value: "multipart/form-data")
 
     static var authorization: HTTPHeader {
         HTTPHeader(field: "Authorization", value: "Bearer \(Auth.apiKey)")
