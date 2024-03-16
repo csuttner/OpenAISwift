@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ImageEditPayload: Encodable {
+public struct ImageEditPayload: MultipartFormEncodable {
     
     /// The image to edit. Must be a valid PNG file, less than 4MB, and square.
     /// If mask is not provided, image must have transparency, which will be used as the mask.
@@ -42,8 +42,17 @@ public struct ImageEditPayload: Encodable {
         self.user = user
     }
     
-    var formData: Data {
-        let data = NSMutableData()
-        return data as Data
+    var fields: [MultipartFormDataField] {
+        [
+            .init(name: "image", filename: "image.png", mimeType: "image/png", data: image),
+            .init(name: "prompt", data: prompt.data(using: .utf8)),
+            .init(name: "mask", filename: "mask.png", mimeType: "image/png", data: mask),
+            .init(name: "model", data: model.rawValue.data(using: .utf8)),
+            .init(name: "n", data: String(n).data(using: .utf8)),
+            .init(name: "size", data: size.rawValue.data(using: .utf8)),
+            .init(name: "response_format", data: responseFormat.rawValue.data(using: .utf8)),
+            .init(name: "user", data: user?.data(using: .utf8))
+        ]
+        .compactMap { $0 }
     }
 }

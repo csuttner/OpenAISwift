@@ -7,7 +7,7 @@
 
 import Foundation
 
-public struct ImageVariationPayload: Encodable {
+public struct ImageVariationPayload: MultipartFormEncodable {
     public let prompt: String
     public let image: Data
     public let model: Model
@@ -33,8 +33,15 @@ public struct ImageVariationPayload: Encodable {
         self.user = user
     }
     
-    var formData: Data {
-        let data = NSMutableData()
-        return data as Data
+    var fields: [MultipartFormDataField] {
+        [
+            .init(name: "prompt", data: prompt.data(using: .utf8)),
+            .init(name: "image", filename: "image.png", mimeType: "image/png", data: image),
+            .init(name: "model", data: model.rawValue.data(using: .utf8)),
+            .init(name: "n", data: String(n).data(using: .utf8)),
+            .init(name: "size", data: size.rawValue.data(using: .utf8)),
+            .init(name: "user", data: user?.data(using: .utf8))
+        ]
+        .compactMap { $0 }
     }
 }

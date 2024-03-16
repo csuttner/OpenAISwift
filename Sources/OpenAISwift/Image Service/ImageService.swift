@@ -13,19 +13,19 @@ public class ImageService: Fetchable {
     }
     
     public func fetchImageEdit(payload: ImageEditPayload) async throws -> ImageResponse {
-        try await upload(payload.formData, router: ImageServiceRouter.edit)
+        try await fetch(ImageServiceRouter.edit(payload))
     }
     
     public func fetchImageVariation(payload: ImageVariationPayload) async throws -> ImageResponse {
-        try await upload(payload.formData, router: ImageServiceRouter.variation)
+        try await fetch(ImageServiceRouter.variation(payload))
     }
 }
 
 enum ImageServiceRouter: ServiceRouter {
     case generation(ImageGenerationPayload)
-    case edit
-    case variation
-    
+    case edit(ImageEditPayload)
+    case variation(ImageVariationPayload)
+
     var path: String {
         switch self {
         case .generation:
@@ -38,29 +38,21 @@ enum ImageServiceRouter: ServiceRouter {
             "/images/variations"
         }
     }
-    
+
     var httpMethod: HTTPMethod {
         .post
     }
     
-    var httpHeaders: [HTTPHeader] {
-        switch self {
-        case .generation:
-            [.contentTypeJSON, .authorization]
-            
-        case .edit, .variation:
-            [.contentTypeFormData, .authorization]
-        }
-        
-    }
-    
-    var body: Encodable? {
+    var requestType: HTTPRequestType {
         switch self {
         case let .generation(payload):
-            return payload
+            .applicationJSON(payload)
             
-        default:
-            return nil
+        case let .edit(payload):
+            .multipartFormData(payload, UUID().uuidString)
+            
+        case let .variation(payload):
+            .multipartFormData(payload, UUID().uuidString)
         }
     }
 }

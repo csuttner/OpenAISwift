@@ -31,16 +31,12 @@ enum ChatServiceRouter: ServiceRouter {
         .post
     }
     
-    var httpHeaders: [HTTPHeader] {
-        [.contentTypeJSON, .authorization]
-    }
-    
-    var body: Encodable? {
+    var requestType: HTTPRequestType {
         switch self {
         case
             let .completion(payload),
             let .completionStream(payload):
-            return payload
+            .applicationJSON(payload)
         }
     }
 }

@@ -18,14 +18,6 @@ extension Fetchable {
         return try decode(data: data, response: response)
     }
     
-    func upload<T: Decodable>(_ formData: Data, router: ServiceRouter) async throws -> T {
-        let request = try router.asURLRequest()
-        
-        let (data, response) = try await URLSession.shared.upload(for: request, from: formData)
-        
-        return try decode(data: data, response: response)
-    }
-    
     private func decode<T: Decodable>(data: Data, response: URLResponse) throws -> T {
         guard let httpResponse = response as? HTTPURLResponse else {
             throw URLError(.badServerResponse)

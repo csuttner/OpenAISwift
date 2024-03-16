@@ -10,8 +10,7 @@ import Foundation
 protocol ServiceRouter {
     var path: String { get }
     var httpMethod: HTTPMethod { get }
-    var httpHeaders: [HTTPHeader] { get }
-    var body: Encodable? { get }
+    var requestType: HTTPRequestType { get }
 }
 
 extension ServiceRouter {
@@ -20,19 +19,15 @@ extension ServiceRouter {
     }
         
     func asURLRequest() throws -> URLRequest {
-        guard let url = URL(string: baseURL + path)
-        else {
+        guard let url = URL(string: baseURL + path) else {
             throw URLError(.badURL)
         }
 
         var request = URLRequest(url: url)
 
         request.httpMethod = httpMethod.rawValue
-        request.httpHeaders = httpHeaders
-
-        if let body {
-            request.httpBody = try JSONEncoder.shared.encode(body)
-        }
+        request.httpHeaders = requestType.httpHeaders
+        request.httpBody = requestType.httpBody
 
         return request
     }
