@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 protocol MultipartFormEncodable {
     var fields: [MultipartFormDataField] { get }
@@ -19,7 +20,7 @@ extension MultipartFormEncodable {
             formData.append(field.multipartFormData(boundary: boundary))
         }
 
-        formData.append("--\(boundary)--\r\n")
+        formData.append("--\(boundary)--")
 
         return formData as Data
     }
@@ -55,7 +56,7 @@ struct MultipartFormDataField {
         formData.append("\r\n")
 
         if let mimeType = mimeType {
-            formData.append("; Content-Type: \(mimeType)\r\n")
+            formData.append("Content-Type: \(mimeType)\r\n")
         }
 
         formData.append("\r\n")

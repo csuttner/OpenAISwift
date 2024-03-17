@@ -17,13 +17,14 @@ extension ServiceRouter {
     var baseURL: String {
         "https://api.openai.com/v1"
     }
-        
+    
     func asURLRequest() throws -> URLRequest {
         guard let url = URL(string: baseURL + path) else {
             throw URLError(.badURL)
         }
 
         var request = URLRequest(url: url)
+        let requestType = requestType
 
         request.httpMethod = httpMethod.rawValue
         request.httpHeaders = requestType.httpHeaders

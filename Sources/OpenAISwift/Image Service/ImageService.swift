@@ -8,6 +8,8 @@
 import Foundation
 
 public class ImageService: Fetchable {
+    public init () {}
+
     public func fetchImageGeneration(payload: ImageGenerationPayload) async throws -> ImageResponse {
         try await fetch(ImageServiceRouter.generation(payload))
     }
